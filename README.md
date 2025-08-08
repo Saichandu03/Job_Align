@@ -6,6 +6,10 @@
 
 ---
 
+<p align="center">
+  <img src="./images/jobAlignLogo.png" alt="Logo" width="500"/>
+</p>
+
 ## About The Project
 
 **JobAlign** is a next-generation, AI-powered mobile application designed to revolutionize the job search and career development experience. With a focus on personalization, intelligence, and user-friendliness, JobAlign empowers users to:
@@ -17,7 +21,6 @@
 
 All features are wrapped in a beautiful, modern interface that makes career growth engaging and accessible.
 
-![JobAlign Welcome Screen](./images/welcome_screen.png)
 
 ---
 
@@ -31,7 +34,7 @@ JobAlign guides users through a seamless journey:
 - Fast registration, easy login, and hassle-free password recovery.
 
 <p align="center">
-  <img src="./images/login.png" alt="Login Screen" width="300"/>
+  <img src="./images/Login.png" alt="Login Screen" width="800"/>
 </p>
 
 ### 2. Home Dashboard
@@ -39,7 +42,7 @@ JobAlign guides users through a seamless journey:
 - Motivational design to keep users engaged and focused.
 
 <p align="center">
-  <img src="./images/home.png" alt="Home Screen" width="200"/>
+  <img src="./images/Home.png" alt="Home Screen" width="500"/>
 </p>
 
 ### 3. Trending Jobs
@@ -47,8 +50,8 @@ JobAlign guides users through a seamless journey:
 - Explore job details, requirements, and market trends to make informed decisions.
 
 <p align="center">
-  <img src="./images/trendingjobs1.png" alt="Trending Jobs" width="300"/>
-  <img src="./images/trendingjobs2.png" alt="Trending Jobs" width="300"/>
+  <img src="./images/TrendingJobs1.png" alt="Trending Jobs" width="500"/>
+  <img src="./images/TrendingJobs2.png" alt="Trending Jobs" width="500"/>
 </p>
 
 ### 4. Job Listings & Filters
@@ -56,8 +59,8 @@ JobAlign guides users through a seamless journey:
 - Clean, informative listings for confident applications.
 
 <p align="center">
-  <img src="./images/FilteredJobs1.png" alt="Job Listings" width="300"/>
-  <img src="./images/FilteredJobs2.png" alt="Job Listings" width="300"/>
+  <img src="./images/FilteredJobs1.png" alt="Job Listings" width="500"/>
+  <img src="./images/FilteredJobs2.png" alt="Job Listings" width="500"/>
 </p>
 
 ### 5. Roadmap
@@ -65,7 +68,7 @@ JobAlign guides users through a seamless journey:
 - Track your progress, explore required topics, and follow a clear path to career success.
 
 <p align="center">
-  <img src="./images/roadmap.png" alt="Roadmap" width="300"/>
+  <img src="./images/Roadmap.png" alt="Roadmap" width="500"/>
 </p>
 
 ### 6. Real-Time Quiz
@@ -73,7 +76,7 @@ JobAlign guides users through a seamless journey:
 - Instant feedback and score tracking for continuous improvement.
 
 <p align="center">
-  <img src="./images/quiz.png" alt="Quiz Screen" width="300"/>
+  <img src="./images/Quiz.png" alt="Quiz Screen" width="800"/>
 </p>
 
 ### 7. Profile
@@ -81,7 +84,7 @@ JobAlign guides users through a seamless journey:
 - Empowering users to take control of their journey.
 
 <p align="center">
-  <img src="./images/profile.png" alt="Profile Screen" width="300"/>
+  <img src="./images/Profile.png" alt="Profile Screen" width="800"/>
 </p>
 
 ### 8. ATS Score
@@ -89,7 +92,7 @@ JobAlign guides users through a seamless journey:
 - Get actionable tips to improve your chances and pass automated screening systems.
 
 <p align="center">
-  <img src="./images/ats.png" alt="ATS Score" width="300"/>
+  <img src="./images/ATS.png" alt="ATS Score" width="800"/>
 </p>
 
 ### 9. Chatbot
@@ -97,7 +100,7 @@ JobAlign guides users through a seamless journey:
 - Conversational interface powered by advanced generative AI.
 
 <p align="center">
-  <img src="./images/chatbot.png" alt="Chatbot" width="300"/>
+  <img src="./images/Chatbot.png" alt="Chatbot" width="800"/>
 </p>
 
 ---
