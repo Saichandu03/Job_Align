@@ -134,7 +134,8 @@ const JobListings = ({ navigation }) => {
     selectedWorkplace: null,
   });
 
-  const API_BASE_URL = 'https://jobalign-backend.onrender.com/api';
+  // const API_BASE_URL = 'https://jobalign-backend.onrender.com/api';
+  const API_BASE_URL = 'http://localhost:5000/api';
   const USER_ID = "68506d63338e4380289ee276";
 
   // Debounced search query handler

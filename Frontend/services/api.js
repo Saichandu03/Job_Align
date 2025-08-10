@@ -1,4 +1,5 @@
-const BASE_URL = 'https://jobalign-backend.onrender.com/api';
+// const BASE_URL = 'https://jobalign-backend.onrender.com/api';
+const BASE_URL = 'http://localhost:5000/api';
 
 // Enhanced error handling with more specific error types
 class APIError extends Error {

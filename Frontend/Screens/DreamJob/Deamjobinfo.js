@@ -70,10 +70,12 @@ const DreamJobPage = ({ navigation }) => {
           // Now fetch data using the retrieved userId
           const companyRes = await axios.post(
             'https://jobalign-backend.onrender.com/api/getCompanyData',
+            'http://localhost:5000/api/getCompanyData',
             { userId: storedUserId } // Use storedUserId here
           );
           const roleRes = await axios.post(
-            'https://jobalign-backend.onrender.com/api/getRoleData',
+            // 'https://jobalign-backend.onrender.com/api/getRoleData',
+            'http://localhost:5000/api/getRoleData',
             { userId: storedUserId } // Use storedUserId here
           );
 

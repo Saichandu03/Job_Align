@@ -139,7 +139,8 @@ const JobListingInfoPage = ({ navigation, route }) => {
   const [matchError, setMatchError] = useState(null);
   const [loadingStage, setLoadingStage] = useState('');
 
-  const API_BASE_URL = 'https://jobalign-backend.onrender.com/api';
+  // const API_BASE_URL = 'https://jobalign-backend.onrender.com/api';
+  const API_BASE_URL = 'http://localhost:5000/api';
   const USER_ID = userId || "68506d63338e4380289ee276";
 
   const createSemiCirclePath = (percentage) => {

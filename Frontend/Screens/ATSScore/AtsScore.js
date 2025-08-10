@@ -641,7 +641,8 @@ const styles = StyleSheet.create({
       }
 
       const response = await axios.post(
-        'https://jobalign-backend.onrender.com/api/getAtsAnalysis',
+        // 'https://jobalign-backend.onrender.com/api/getAtsAnalysis',
+        'http://localhost:5000/api/getAtsAnalysis',
         formData,
         {
           headers: {

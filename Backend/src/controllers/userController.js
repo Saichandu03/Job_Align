@@ -57,6 +57,7 @@ const createUser = async (req, res) => {
 };
 
 const userLogin = async (req, res) => {
+  console.log("User Login Request Received");
   try {
     const { name, email, password } = req.body;
 

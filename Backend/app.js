@@ -27,13 +27,16 @@ mongoose.connect(process.env.MONGO_URI).then(() => console.log('MongoDB connecte
 var userRouter = require("./src/routes/userRouter");
 var jobsRouter = require("./src/routes/jobsRouter");
 var resumeRouter = require("./src/routes/resumeRouter");
+
 var dreamRoleRouter = require('./src/routes/dreamRoleRouter')
+var chatbotRouter = require('./src/routes/chatbotRouter')
 
 
 app.use('/api', userRouter);
 app.use('/api', jobsRouter);
 app.use('/api', resumeRouter);
 app.use('/api', dreamRoleRouter);
+app.use('/api', chatbotRouter);
 
 // Sample route
 app.get('/', (req, res) => {
