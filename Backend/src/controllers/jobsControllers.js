@@ -13,7 +13,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const Together = require("together-ai");
 
 // const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY);
-const genAI1 = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY_1);
+const genAI1 = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY_2);
 
 // const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 const model1 = genAI1.getGenerativeModel({ model: "gemini-1.5-flash" });
