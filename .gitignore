@@ -1,0 +1,14 @@
+
+# dependencies
+/Backend/node_modules/
+/Frontend/node_modules/
+
+/Backend/.env
+/Frontend/.env
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
