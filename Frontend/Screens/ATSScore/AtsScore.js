@@ -25,6 +25,8 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const { width, height } = Dimensions.get('window');
 
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+
 // Color palette
 export const colors = {
   primary: '#0077B6',
@@ -641,8 +643,7 @@ const styles = StyleSheet.create({
       }
 
       const response = await axios.post(
-        // 'https://jobalign-backend.onrender.com/api/getAtsAnalysis',
-        'http://localhost:5000/api/getAtsAnalysis',
+        `${API_BASE_URL}/api/getAtsAnalysis`,
         formData,
         {
           headers: {
