@@ -15,7 +15,9 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
-import axios from 'axios'; // Import axios for API calls
+import axios from 'axios';
+import { getApiBaseUrl } from '../../services/api';
+import { useAuth } from '../../utils/AuthContext';
 
 const { width } = Dimensions.get('window');
 
@@ -130,6 +132,7 @@ const SkeletonBenefits = () => (
 
 const JobListingInfoPage = ({ navigation, route }) => {
   const { job, userId } = route.params;
+  const { user } = useAuth(); // Get user from context
   const [activeTab, setActiveTab] = useState('company');
   const [jobDetails, setJobDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -139,9 +142,9 @@ const JobListingInfoPage = ({ navigation, route }) => {
   const [matchError, setMatchError] = useState(null);
   const [loadingStage, setLoadingStage] = useState('');
 
-  // const API_BASE_URL = 'https://jobalign-backend.onrender.com/api';
-  const API_BASE_URL = 'http://localhost:5000/api';
-  const USER_ID = userId || "68506d63338e4380289ee276";
+  const API_BASE_URL = getApiBaseUrl();
+  // Use userId from route params, fallback to context user, or show error
+  const USER_ID = userId || user?.id || user?._id;
 
   const createSemiCirclePath = (percentage) => {
     const radius = 80;
@@ -159,6 +162,19 @@ const JobListingInfoPage = ({ navigation, route }) => {
   };
 
   const fetchMatchAnalytics = async () => {
+    // Validate user authentication before API call
+    if (!USER_ID) {
+      setMatchError('User not authenticated. Please log in.');
+      Alert.alert('Authentication Required', 'Please log in to view resume match analysis.');
+      return;
+    }
+
+    if (!API_BASE_URL) {
+      setMatchError('API configuration error. Please try again later.');
+      Alert.alert('Error', 'Unable to connect to server. Please check your connection.');
+      return;
+    }
+
     try {
       setLoadingMatch(true);
       setMatchError(null);
@@ -186,7 +202,7 @@ const JobListingInfoPage = ({ navigation, route }) => {
       setTimeout(() => setLoadingStage('Calculating match score...'), 2000);
       setTimeout(() => setLoadingStage('Generating recommendations...'), 3000);
 
-      const response = await fetch(`${API_BASE_URL}/getMatchAnalyticsFromMain`, {
+      const response = await fetch(`${API_BASE_URL}/api/getMatchAnalyticsFromMain`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -204,114 +220,94 @@ const JobListingInfoPage = ({ navigation, route }) => {
     } catch (err) {
       console.error('Error fetching match analytics:', err);
       setMatchError(err.message);
-
-      // Mock data for demonstration on error
-      const mockData = {
-        matchPercentage: 75,
-        matchedSkills: [
-          "Java",
-          "Python",
-          "React.js",
-          "Node.js",
-          "Express.js",
-          "MongoDB",
-          "PostgreSQL",
-          "Git"
-        ],
-        unmatchedSkills: [
-          "AWS",
-          "Docker",
-          "RESTful APIs",
-          "Kubernetes",
-          "Agile",
-          "Distributed Systems"
-        ],
-        improvementSuggestions: [
-          "Obtain AWS Certified Developer certification",
-          "Gain hands-on experience with Docker/Kubernetes",
-          "Develop expertise in RESTful API design",
-          "Contribute to large-scale open-source projects"
-        ]
-      };
-
-      setMatchAnalytics(mockData);
+      Alert.alert('Error', 'Failed to fetch match analytics. Please try again.');
     } finally {
       setLoadingMatch(false);
       setLoadingStage('');
     }
   };
 
-  // Function to handle re-uploading resume
   const handleReUploadResume = async () => {
+    if (!USER_ID) {
+      Alert.alert('Authentication Required', 'Please log in to upload resume.');
+      return;
+    }
+
+    if (!API_BASE_URL) {
+      Alert.alert('Error', 'Unable to connect to server. Please check your connection.');
+      return;
+    }
+
     try {
-      // In a real mobile app, you would use a document picker here
-      // For example, using expo-document-picker:
-      // const res = await DocumentPicker.getDocumentAsync({
-      //   type: 'application/pdf', // Specify PDF type
+      // Use proper document picker for React Native/Expo
+      // Import: import * as DocumentPicker from 'expo-document-picker';
+      // const result = await DocumentPicker.getDocumentAsync({
+      //   type: 'application/pdf',
+      //   copyToCacheDirectory: true,
       // });
-      // if (res.type === 'success') {
-      //   const resumeFileName = res.name;
-      //   const resumeUri = res.uri; // This URI can be read into a base64 string or FormData
-
-      // For demonstration, we'll use a static resume name and dummy data
-      const resumeFileName = "SaiChandu.pdf"; // This would come from the document picker
-      // const dummyResumeContent = "dummy_base64_content_of_pdf"; // In a real app, read file content
-
-      if (!job) {
-        Alert.alert('Error', 'Job details not available for re-upload.');
-        return;
-      }
-
-      const payload = {
-        userId: USER_ID,
-        jobObject: JSON.stringify({
-          title: job.title,
-          company: job.company,
-          location: job.location,
-          url: job.url,
-          created: job.created,
-          category: job.category,
-          description: job.description,
-          salary_is_predicted: job.salary_is_predicted || "0",
-          Workplace_Model: job.Workplace_Model || "On-site",
-          Work_Type: job.Work_Type || "Unspecified",
-          Contract_Type: job.Contract_Type || "Unspecified",
-          Experience_Level: job.Experience_Level || "fresher"
-        }),
-        resume: resumeFileName, // Sending filename as per the API structure
-      };
-
-      Alert.alert('Uploading', `Re-uploading ${resumeFileName}...`);
-      setLoadingMatch(true); // Indicate loading for the re-upload process
-
-      const response = await axios.post(
-        'https://jobalign-backend.onrender.com/getMatchAnalyticsFromTemp',
-        payload,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      
+      // For now, show alert that feature requires document picker implementation
+      Alert.alert(
+        'Feature Coming Soon',
+        'Resume upload feature will be available soon. Please use the web portal to upload your resume.',
+        [{ text: 'OK' }]
       );
+      
+      // Commented out for proper implementation later
+      // if (result.type === 'cancel') return;
+      // const resumeFileName = result.name;
+      // const resumeUri = result.uri;
 
-      if (response.data) {
-        // Assuming the API returns the updated match analytics directly
-        setMatchAnalytics(response.data);
-        Alert.alert('Success', 'Resume re-uploaded and analysis updated!');
-      } else {
-        Alert.alert('Error', 'API response was empty or malformed.');
-      }
+      // const payload = {
+      //   userId: USER_ID,
+      //   jobObject: JSON.stringify({
+      //     title: job.title,
+      //     company: job.company,
+      //     location: job.location,
+      //     url: job.url,
+      //     created: job.created,
+      //     category: job.category,
+      //     description: job.description,
+      //     salary_is_predicted: job.salary_is_predicted || "0",
+      //     Workplace_Model: job.Workplace_Model || "On-site",
+      //     Work_Type: job.Work_Type || "Unspecified",
+      //     Contract_Type: job.Contract_Type || "Unspecified",
+      //     Experience_Level: job.Experience_Level || "fresher"
+      //   }),
+      //   resume: resumeFileName,
+      // };
+
+      // setLoadingMatch(true);
+      // const response = await axios.post(
+      //   `${API_BASE_URL}/api/getMatchAnalyticsFromTemp`,
+      //   payload,
+      //   {
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //   }
+      // );
+
+      // if (response.data) {
+      //   setMatchAnalytics(response.data);
+      //   Alert.alert('Success', 'Resume re-uploaded and analysis updated!');
+      //   fetchMatchAnalytics(); // Refresh analytics
+      // }
     } catch (err) {
       console.error("Error during re-upload:", err);
       Alert.alert('Error', `Failed to re-upload resume: ${err.message || 'Unknown error'}`);
     } finally {
-      setLoadingMatch(false); // Stop loading regardless of success or failure
+      setLoadingMatch(false);
       setLoadingStage('');
     }
   };
 
-
   const fetchJobDetails = async () => {
+    if (!API_BASE_URL) {
+      Alert.alert('Error', 'Unable to connect to server. Please check your connection.');
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -331,7 +327,7 @@ const JobListingInfoPage = ({ navigation, route }) => {
         Experience_Level: job.Experience_Level || "fresher"
       };
 
-      const response = await fetch(`${API_BASE_URL}/getJobDetails`, {
+      const response = await fetch(`${API_BASE_URL}/api/getJobDetails`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

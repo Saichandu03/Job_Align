@@ -134,8 +134,7 @@ const JobListings = ({ navigation }) => {
     selectedWorkplace: null,
   });
 
-  // const API_BASE_URL = 'https://jobalign-backend.onrender.com/api';
-  const API_BASE_URL = 'http://localhost:5000/api';
+  const API_BASE_URL =  process.env.EXPO_PUBLIC_API_BASE_URL;
   const USER_ID = "68506d63338e4380289ee276";
 
   // Debounced search query handler
@@ -214,7 +213,7 @@ const JobListings = ({ navigation }) => {
   // Function to fetch user's preferred filters from API
   const fetchUserFilters = async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/getUserFilters`, {
+      const response = await axios.post(`${API_BASE_URL}/api/getUserFilters`, {
         userId: USER_ID
       });
       return {
@@ -268,7 +267,7 @@ const JobListings = ({ navigation }) => {
         filters: apiFilters
       };
 
-      const response = await axios.post(`${API_BASE_URL}/getFilteredJobs`, requestBody);
+      const response = await axios.post(`${API_BASE_URL}/api/getFilteredJobs`, requestBody);
 
       if (!response.data || !response.data.jobs) {
         throw new Error('Invalid response structure from server');
