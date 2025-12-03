@@ -74,6 +74,8 @@ const handleLogin = async () => {
   setLoading(true);
   try {
     console.log('Attempting login with:', { email, password });
+
+    console.log("This is Base Url " )
     const result = await authAPI.loginUser({ email, password });
     if (result.success) {
       await login(result.userId); // This will update isAuthenticated and trigger navigation
