@@ -1,5 +1,60 @@
-// const BASE_URL = 'https://jobalign-backend.onrender.com/api';
-const BASE_URL = 'http://localhost:5000/api';
+import Constants from 'expo-constants';
+
+// Removed host-based dev fallback. Only rely on Expo config "extra" or a runtime/global override
+const normalizeBase = (url) => (url ? String(url).replace(/\/+$/, '') : null);
+
+const getBaseUrl = () => {
+  const extra =
+    Constants.expoConfig?.extra ??
+    Constants?.manifest?.extra ??
+    {};
+
+  // Try multiple common keys to avoid misconfig (supports both extra and EXPO_PUBLIC_ envs)
+  const candidates = [
+    extra.API_BASE_URL,
+    extra.EXPO_PUBLIC_API_BASE_URL,
+    extra.API_URL,
+    extra.BASE_URL,
+    global.API_BASE_URL,
+    global.BASE_URL,
+    typeof process !== 'undefined' ? process.env?.EXPO_PUBLIC_API_BASE_URL : null,
+    typeof process !== 'undefined' ? process.env?.API_BASE_URL : null,
+    typeof process !== 'undefined' ? process.env?.API_URL : null,
+    typeof process !== 'undefined' ? process.env?.BASE_URL : null,
+  ];
+  const found = candidates.find(Boolean) || null;
+  const resolved = normalizeBase(found);
+
+  // Debug source resolution (only once on init)
+  if (!resolved) {
+    console.error('API base URL not found. Checked keys: API_BASE_URL, EXPO_PUBLIC_API_BASE_URL, API_URL, BASE_URL in extra/global/env.');
+  }
+
+  return resolved;
+};
+
+// Allow runtime override if you want to inject from app bootstrap
+let BASE_URL = getBaseUrl();
+export const setApiBaseUrl = (url) => {
+  BASE_URL = normalizeBase(url);
+  if (!BASE_URL) console.error('setApiBaseUrl received invalid URL.');
+  else console.log('API Base URL (runtime):', BASE_URL);
+};
+
+// Export getter for BASE_URL so components can access it
+export const getApiBaseUrl = () => BASE_URL;
+
+const buildEndpoint = (path) => {
+  const cleanPath = path.replace(/^\/+/, '');
+  if (!BASE_URL) return `/${cleanPath}`; // avoid throwing; caller will handle APIError
+  return `${BASE_URL}/${cleanPath}`;
+};
+
+if (!BASE_URL) {
+  console.error('API_BASE_URL is not defined. Set it in app.json/app.config under "extra" or via EXPO_PUBLIC_API_BASE_URL, or call setApiBaseUrl at runtime.');
+} else {
+  console.log('API Base URL:', BASE_URL);
+}
 
 // Enhanced error handling with more specific error types
 class APIError extends Error {
@@ -48,6 +103,8 @@ const fetchWithTimeout = async (url, options = {}, timeout = 30000) => {
     clearTimeout(timeoutId);
     return response;
   } catch (error) {
+    // console.log("This is the error from main")
+    // console.log(error)
     clearTimeout(timeoutId);
     if (error.name === 'AbortError') {
       throw new APIError('Request timeout', 408, 'TIMEOUT');
@@ -88,12 +145,11 @@ export const authAPI = {
   // Create user with enhanced error handling
   createUser: async (userData) => {
     try {
+      if (!BASE_URL) return { success: false, error: 'API base URL missing', code: 'MISSING_BASE_URL', status: 0 };
       return await retryRequest(async () => {
-        const response = await fetchWithTimeout(`${BASE_URL}/createUser`, {
+        const response = await fetchWithTimeout(buildEndpoint('api/createUser'), {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(userData),
         });
         return await handleResponse(response);
@@ -117,6 +173,7 @@ export const authAPI = {
 
   // Login user with enhanced validation
   loginUser: async (credentials) => {
+    console.log('This is Base Url', BASE_URL);
     try {
       // Validate input
       if (!credentials.email || !credentials.password) {
@@ -127,12 +184,11 @@ export const authAPI = {
         };
       }
 
+      if (!BASE_URL) return { success: false, error: 'API base URL missing', code: 'MISSING_BASE_URL', status: 0 };
       return await retryRequest(async () => {
-        const response = await fetchWithTimeout(`${BASE_URL}/loginUser`, {
+        const response = await fetchWithTimeout(buildEndpoint('api/loginUser'), {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(credentials),
         });
         return await handleResponse(response);
@@ -178,12 +234,11 @@ export const authAPI = {
         };
       }
 
+      if (!BASE_URL) return { success: false, error: 'API base URL missing', code: 'MISSING_BASE_URL', status: 0 };
       return await retryRequest(async () => {
-        const response = await fetchWithTimeout(`${BASE_URL}/sendOtp`, {
+        const response = await fetchWithTimeout(buildEndpoint('api/sendOtp'), {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email }),
         });
         return await handleResponse(response);
@@ -237,12 +292,11 @@ export const authAPI = {
         };
       }
 
+      if (!BASE_URL) return { success: false, error: 'API base URL missing', code: 'MISSING_BASE_URL', status: 0 };
       return await retryRequest(async () => {
-        const response = await fetchWithTimeout(`${BASE_URL}/verifyOtp`, {
+        const response = await fetchWithTimeout(buildEndpoint('api/verifyOtp'), {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, otp }),
         });
         return await handleResponse(response);
@@ -296,12 +350,11 @@ export const authAPI = {
         };
       }
 
+      if (!BASE_URL) return { success: false, error: 'API base URL missing', code: 'MISSING_BASE_URL', status: 0 };
       return await retryRequest(async () => {
-        const response = await fetchWithTimeout(`${BASE_URL}/forgotPassword`, {
+        const response = await fetchWithTimeout(buildEndpoint('api/forgotPassword'), {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
         });
         return await handleResponse(response);
@@ -326,11 +379,10 @@ export const authAPI = {
   // Health check endpoint to test API connectivity
   healthCheck: async () => {
     try {
-      const response = await fetchWithTimeout(`${BASE_URL}/health`, {
+      if (!BASE_URL) return { success: false, error: 'API base URL missing', code: 'MISSING_BASE_URL', status: 0 };
+      const response = await fetchWithTimeout(buildEndpoint('api/health'), {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       }, 5000); // Shorter timeout for health check
       
       return await handleResponse(response);
