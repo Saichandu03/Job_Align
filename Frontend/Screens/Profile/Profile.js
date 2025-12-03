@@ -119,9 +119,10 @@ const Profile = ({ navigation }) => {
   ];
 
   // API Base URL
-  // const API_BASE_URL = 'https://jobalign-backend.onrender.com/api';
-  const API_BASE_URL = 'http://localhost:5000/api';
+  const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
+  // console.log("This is Base Url from Profile ", API_BASE_URL)
+  
   // Axios instance
   const api = axios.create({
     baseURL: API_BASE_URL,
@@ -189,14 +190,15 @@ const Profile = ({ navigation }) => {
     if (!userId) return;
     try {
       setLoading(true);
-      const response = await api.post('/getUserData', { userId });
-      console.log(response.data)
+      const response = await api.post('/api/getUserData', { userId });
+      // console.log(response.data)
       if (response.data) {
         setUserData(response.data);
       } else {
         showToast(response.data?.message || 'Failed to load user data', 'error');
       }
     } catch (error) {
+      console.log("Error loading user data:", error);
       showToast('Failed to load user data', 'error');
     } finally {
       setLoading(false);
@@ -213,7 +215,7 @@ const Profile = ({ navigation }) => {
     if (!userId) return false;
     try {
       setLoading(true);
-      const response = await api.post('/updateUserDetails', { userId, ...details });
+      const response = await api.post('/api/updateUserDetails', { userId, ...details });
       if (response.data) {
         setUserData(prev => ({ ...prev, ...details }));
         showToast('Profile updated successfully!', 'success');
@@ -232,7 +234,7 @@ const Profile = ({ navigation }) => {
     if (!userId) return false;
     try {
       setLoading(true);
-      const response = await axios.post(API_BASE_URL + '/updateContactDetails', {
+      const response = await axios.post(API_BASE_URL + '/api/updateContactDetails', {
         userId,
         ...details
       });
@@ -265,7 +267,13 @@ const Profile = ({ navigation }) => {
         return false;
       }
 
-      const response = await axios.post(API_BASE_URL + '/updatePreferedRoles', {
+
+      console.log(api + "/api/updatePreferedRoles")
+      console.log("Body", {
+        userId,
+        preferedRoles: roles,
+      })
+      const response = await axios.post(API_BASE_URL + '/api/updatePreferedRoles', {
         userId,
         preferedRoles: roles,
       });
@@ -298,7 +306,7 @@ const Profile = ({ navigation }) => {
         return false;
       }
 
-      const response = await axios.post(API_BASE_URL + '/updatePreferedLocations', {
+      const response = await axios.post(API_BASE_URL + '/api/updatePreferedLocations', {
         userId,
         preferedLocations: locations,
       });
@@ -331,7 +339,7 @@ const Profile = ({ navigation }) => {
         return false;
       }
 
-      const response = await axios.post(API_BASE_URL + '/sendOtp', { email });
+      const response = await axios.post(API_BASE_URL + '/api/sendOtp', { email });
 
       if (response.data) {
         setOtpTimer(300); // 5 minutes
@@ -362,7 +370,7 @@ const Profile = ({ navigation }) => {
         return false;
       }
 
-      const response = await axios.post(API_BASE_URL + '/verifyOtp', {
+      const response = await axios.post(API_BASE_URL + '/api/verifyOtp', {
         email: email,
         otp: otpCode
       });
@@ -422,7 +430,7 @@ const Profile = ({ navigation }) => {
 
       formData.append('resume', fileObject);
 
-      const uploadUrl = `${API_BASE_URL}/addResume`;
+      const uploadUrl = `${API_BASE_URL}/api/addResume`;
 
       const xhr = new XMLHttpRequest();
 
@@ -583,7 +591,7 @@ const Profile = ({ navigation }) => {
         role: editData.selectedRole,
       };
 
-      const response = await api.post('/addDreamRole', dreamJobPayload);
+      const response = await api.post('/api/addDreamRole', dreamJobPayload);
 
       if (response.data) {
         setUserData(prev => ({
