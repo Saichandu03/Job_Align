@@ -19,6 +19,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+
 // Color palette
 const colors = {
     primary: '#48CAE4',
@@ -262,8 +265,7 @@ const Roadmap = () => {
                 // Check if userId exists before making the API call
                 if (userId) {
                     const response = await axios.post(
-                        // 'https://jobalign-backend.onrender.com/api/getRoadMap', {
-                        'http://localhost:5000/api/getRoadMap', {
+                        `${API_BASE_URL}/api/getRoadMap`, {
                         userId: userId // Use the dynamic userId from AsyncStorage
                     });
                     setRoadmapData(response.data[0]); // Assuming the API returns an array with one item

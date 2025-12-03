@@ -17,6 +17,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // Import 
 
 const { width } = Dimensions.get('window');
 
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+
 // Skeleton Loader Component (remains the same)
 const SkeletonLoader = () => (
   <View style={styles.skeletonContainer}>
@@ -69,13 +72,11 @@ const DreamJobPage = ({ navigation }) => {
           setUserId(storedUserId);
           // Now fetch data using the retrieved userId
           const companyRes = await axios.post(
-            'https://jobalign-backend.onrender.com/api/getCompanyData',
-            'http://localhost:5000/api/getCompanyData',
+            `${API_BASE_URL}/api/getCompanyData`,
             { userId: storedUserId } // Use storedUserId here
           );
           const roleRes = await axios.post(
-            // 'https://jobalign-backend.onrender.com/api/getRoleData',
-            'http://localhost:5000/api/getRoleData',
+            `${API_BASE_URL}/api/getRoleData`,
             { userId: storedUserId } // Use storedUserId here
           );
 
