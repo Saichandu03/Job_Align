@@ -144,7 +144,21 @@ const JobListingInfoPage = ({ navigation, route }) => {
 
   const API_BASE_URL = getApiBaseUrl();
   // Use userId from route params, fallback to context user, or show error
-  const USER_ID = userId || user?.id || user?._id;
+  const USER_ID = userId || user?.id || user?._id || "68506d63338e4380289ee276";
+  // const USER_ID =  AsyncStorage.getItem('userId');
+
+  // if(USER_ID){
+
+  //   Alert.alert("User ID", USER_ID);
+  // }
+  // else{
+  //   Alert.alert("No User ID found", USER_ID);
+  // }
+
+  // Alert.alert(job);
+  // console.log("This is passed Data")
+  // console.log(job, userId)
+
 
   const createSemiCirclePath = (percentage) => {
     const radius = 80;

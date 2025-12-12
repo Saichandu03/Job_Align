@@ -13,7 +13,8 @@ import {
   FlatList,
   RefreshControl,
   Animated,
-  Easing
+  Easing,
+  Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -134,8 +135,11 @@ const JobListings = ({ navigation }) => {
     selectedWorkplace: null,
   });
 
+
   const API_BASE_URL =  process.env.EXPO_PUBLIC_API_BASE_URL;
   const USER_ID = "68506d63338e4380289ee276";
+  // const USER_ID =  AsyncStorage.getItem('userId');
+
 
   // Debounced search query handler
   const debouncedSetSearchQuery = React.useCallback(
