@@ -14,9 +14,9 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY);
 const genAI2 = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY_4);
 const genAI3 = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY_3);
 
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-const model2 = genAI2.getGenerativeModel({ model: "gemini-1.5-flash" });
-const model3 = genAI3.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+const model2 = genAI2.getGenerativeModel({ model: "gemini-2.5-flash" });
+const model3 = genAI3.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 const together = new Together({
   apiKey: process.env.TOGETHER_API_KEY,

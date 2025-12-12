@@ -10,7 +10,7 @@ async function chatbotHandler(req, res) {
       return res.status(400).json({ error: "Prompt is required" });
     }
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   // Compose the same prompt as the frontend
   const fullPrompt = `You are a highly specialized AI assistant for a job alignment application. Your purpose is strictly limited to providing direct, concise, and accurate answers solely on topics related to **technical fields, career development, professional skills, and education**.
 

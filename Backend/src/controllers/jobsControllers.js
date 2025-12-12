@@ -16,7 +16,7 @@ const Together = require("together-ai");
 const genAI1 = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY_2);
 
 // const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-const model1 = genAI1.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model1 = genAI1.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 const together = new Together({
   apiKey: process.env.TOGETHER_API_KEY,
@@ -1164,6 +1164,7 @@ ${JSON.stringify(jobObject, null, 2)}
     res.status(200).json(parsedAnalysis);
   } catch (error) {
     console.error("Error in main function:", error);
+    console.warn(error)
     res
       .status(500)
       .json({ error: "Internal server error", message: error.message });
