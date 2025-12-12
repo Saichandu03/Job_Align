@@ -884,12 +884,12 @@ const Profile = ({ navigation }) => {
 
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
-          {renderStatsCard('file-text', userData.applications || 24, 'Applications', colors.lightBlue)}
-          {renderStatsCard('calendar', userData.interviews || 5, 'Interviews', colors.lightBlue2)}
+          {renderStatsCard('file-text', userData.applications || 1, 'Applications', colors.lightBlue)}
+          {renderStatsCard('calendar', userData.interviews || 0, 'Interviews', colors.lightBlue2)}
         </View>
 
         <View style={styles.statsGrid}>
-          {renderStatsCard('eye', userData.profileViews || 32, 'Profile Views', colors.lightBlue)}
+          {renderStatsCard('eye', userData.profileViews || 0, 'Profile Views', colors.lightBlue)}
           {renderStatsCard('award', `${userData.atsScore}%`, 'Resume Score', colors.lightBlue2)}
         </View>
 

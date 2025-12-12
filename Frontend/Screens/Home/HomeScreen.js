@@ -133,7 +133,7 @@ const HomeScreen = () => {
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.appTitle}>Job Align</Text>
-            <Text style={styles.welcomeTitle}>Welcome back, Surya!</Text>
+            <Text style={styles.welcomeTitle}>Welcome back, Chandu!</Text>
             <Text style={styles.subtitle}>Here's your career progress overview</Text>
           </View>
 
