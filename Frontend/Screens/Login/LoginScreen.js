@@ -78,12 +78,17 @@ const handleLogin = async () => {
     console.log("This is Base Url " )
     const result = await authAPI.loginUser({ email, password });
     if (result.success) {
-      await login(result.userId); // This will update isAuthenticated and trigger navigation
+        console.log("This is Login Result ", result.data.userId)
+          await AsyncStorage.setItem('userId', result.data.userId);
+
+
+      await login(result.data.userId); // This will update isAuthenticated and trigger navigation
     } else {
       console.log("Login failed", result);
       showAlert('Login Failed', result.error || 'Invalid credentials');
     }
   } catch (error) {
+    console.error("Login error:", error);
     showAlert('Error', 'Network error. Please try again.');
   } finally {
     setLoading(false);
