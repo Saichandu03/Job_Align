@@ -26,6 +26,7 @@
     "multer": "^2.0.1",
     "multer-storage-cloudinary": "^4.0.0",
     "node-cron": "^4.1.0",
+    "node-fetch": "^2.7.0",
     "nodemailer": "^7.0.3",
     "p-limit": "^6.2.0",
     "pdf-parse": "^1.1.1",
@@ -33,7 +34,6 @@
     "together-ai": "^0.16.0"
   },
   "devDependencies": {
-    "node-fetch": "^3.3.2",
     "nodemon": "^3.1.10"
   }
 }
