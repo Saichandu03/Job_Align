@@ -1,31 +1,47 @@
 export default {
   expo: {
-    name: 'Job_Align',
+    name: 'Job Align',
     slug: 'job-align',
     version: '1.0.0',
     orientation: 'portrait',
-    icon: './assets/icon.png',
     userInterfaceStyle: 'light',
+
+    icon: './assets/icon.png',
+
     splash: {
       image: './assets/splash.png',
       resizeMode: 'contain',
-      backgroundColor: '#ffffff'
+      backgroundColor: '#ffffff',
     },
+
     assetBundlePatterns: ['**/*'],
+
     ios: {
-      supportsTablet: true
+      supportsTablet: true,
     },
+
     android: {
+      package: 'com.jobalign.app',
+      versionCode: 1,
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
-        backgroundColor: '#ffffff'
-      }
+        backgroundColor: '#ffffff',
+      },
+      permissions: [
+        'android.permission.INTERNET',
+        'android.permission.ACCESS_NETWORK_STATE',
+      ],
     },
+
     web: {
-      favicon: './assets/favicon.png'
+      favicon: './assets/favicon.png',
     },
+
     extra: {
       API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL,
-    }
-  }
+      eas: {
+        projectId: 'e74c191f-fc89-4068-9c82-1a2f51fe9153',
+      },
+    },
+  },
 };
