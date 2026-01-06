@@ -21,10 +21,10 @@ const HomeScreen = () => {
 
   // Exact data from TSX version
   const analyticsData = {
-    totalApplications: 1,
+    totalApplications: 0,
     interviewsScheduled: 0,
     responseRate: 0,
-    averageMatchScore: 75,
+    averageMatchScore: 70,
     weeklyProgress: [
       { day: "Mon", applications: 3 },
       { day: "Tue", applications: 5 },
