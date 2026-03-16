@@ -10,7 +10,7 @@ const { parse } = require("dotenv");
 const dreamRoleSchema = require("../models/dreamRoleSchema");
 const userSchema = require("../models/userSchema");
 const dreamComanySchema = require("../models/dreamComanySchema");
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY_1);
 const genAI2 = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY_4);
 const genAI3 = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY_3);
 
@@ -213,13 +213,7 @@ const together = new Together({
 const parseJson = (content) => {
   const jsonRegex = /```json\s*([\s\S]*?)\s*```/;
   const match = content.match(jsonRegex);
-
-  if (!match) {
-    console.warn("No JSON block found in the content.");
-    return null;
-  }
-
-  const jsonString = match[1].trim();
+  const jsonString = match ? match[1].trim() : content.trim();
 
   try {
     return JSON.parse(jsonString);
@@ -229,30 +223,79 @@ const parseJson = (content) => {
   }
 };
 
+const isValidHttpUrl = (value) => {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return false;
+  }
+
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch (error) {
+    return false;
+  }
+};
+
+const buildFallbackReferenceLink = (dreamRole, skillName, topicName) => {
+  const searchQuery = `${dreamRole} ${skillName} ${topicName} official documentation`;
+  return `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+};
+
+const normalizeReferenceLink = (referenceLink, dreamRole, skillName, topicName) => {
+  if (typeof referenceLink === "string") {
+    const trimmedLink = referenceLink.trim();
+
+    if (isValidHttpUrl(trimmedLink)) {
+      return trimmedLink;
+    }
+
+    if (isValidHttpUrl(`https://${trimmedLink}`)) {
+      return `https://${trimmedLink}`;
+    }
+  }
+
+  return buildFallbackReferenceLink(dreamRole, skillName, topicName);
+};
+
 const generateSkillRoadmap = async (role) => {
   const prompt = `
-Generate a comprehensive, industry-standard skill roadmap for a professional "${role}", structured from beginner to expert level. The response must be a pure JSON object, adhering to the following strict requirements:
+You are a senior curriculum architect for career platforms.
 
-1. Skill Separation: List exactly 8 distinct, globally recognized skills essential for the role. Do not merge disparate skills (e.g., "HTML" and "CSS" must be separate). Sub-skills are only grouped if they constitute a recognized industry standard (e.g., "React" within a broader "Frontend Frameworks" skill).
+Generate a production-quality technical skill roadmap for the role "${role}".
+The roadmap must be practical, hiring-focused, and ordered from beginner to advanced.
 
-2. Topics Per Skill: Each skill must contain 8-10 highly relevant, job-critical topics. These topics must be meticulously ordered, progressing logically from foundational concepts to advanced, expert-level knowledge.
+STRICT OUTPUT RULES:
+1. Return ONLY a valid JSON object.
+2. Do not include markdown fences, comments, headings, or explanatory text.
+3. Use this exact top-level structure:
+   {
+     "${role}": [ ... ]
+   }
 
-3. Topic Structure: Every topic must be an object with three keys:
-    - "topicName": A concise, standard, and widely used title (e.g., "Flexbox Layout", not "Advanced Flexbox Layout Techniques Explained").
-    - "description": A brief 1-2 line summary, focusing on the practical application or core understanding of the topic.
-    - "completed": false (default boolean value, always).
-    - "score": null (default null value, always).
+ROADMAP REQUIREMENTS:
+1. Include exactly 8 distinct industry-standard skills.
+2. Each skill must contain 8 to 10 non-overlapping topics.
+3. Topics must be sequenced from foundational to advanced.
+4. Avoid duplicate concepts across all skills.
+5. Prioritize core technologies and real-world industry practices.
+6. For testing/debugging topics, include only mainstream tools.
 
-4. Content Rules:
-    - Prioritize topics that are most crucial for a professional "${role}" in the current job market, emphasizing practical utility and real-world applicability.
-    - For 'Testing & Debugging', include only the most essential and commonly used tools (e.g., Jest, React Testing Library, browser DevTools); avoid overly specific or niche tools.
-    - Ensure absolute uniqueness of topics; if a concept is covered under one skill (e.g., "Asynchronous JS" under JavaScript), it must not reappear under another (e.g., 'APIs').
-    - Focus on core competencies and established technologies; refrain from including experimental or rapidly changing technologies unless they are clearly becoming industry standards.
+TOPIC OBJECT SCHEMA (mandatory):
+Each topic must be an object with EXACTLY these keys:
+- "topicName": string
+- "description": string (1 to 2 concise lines, practical and beginner-friendly)
+- "referenceLink": string (must be a live, direct, publicly accessible HTTPS URL)
+- "completed": false
+- "score": null
 
-Output Format:
-The entire response must be a pure JSON object, without any additional text, markdown formatting (other than for the JSON itself), comments, or apologies.
+REFERENCE LINK QUALITY RULES:
+1. Use only high-trust sources: official documentation, major standards bodies, or authoritative educational sites.
+2. Prefer official docs pages over homepages (for example, use a specific docs/tutorial page).
+3. Every link must start with "https://".
+4. Every link must be unique per topic and directly relevant to that topic.
+5. Never use placeholder, broken-looking, or example domains.
 
-Example JSON Structure (for internal reference, actual content varies based on role):
+EXAMPLE STRUCTURE:
 {
   "${role}": [
     {
@@ -260,7 +303,8 @@ Example JSON Structure (for internal reference, actual content varies based on r
       "topics": [
         {
           "topicName": "Semantic HTML",
-          "description": "Using HTML5 tags for meaningful structure.",
+          "description": "Use semantic HTML5 tags to create accessible and meaningful page structure.",
+          "referenceLink": "https://developer.mozilla.org/en-US/docs/Glossary/Semantics",
           "completed": false,
           "score": null
         }
@@ -287,6 +331,13 @@ Example JSON Structure (for internal reference, actual content varies based on r
     );
   }
 };
+
+
+
+// setTimeout(async() =>{
+//   const response = await generateSkillRoadmap("React Native Developer");
+//   console.log(JSON.stringify(response, null, 2));
+// }, 2000);
 
 const generateRoleDetails = async (role) => {
   const prompt = `You are a highly specialized data researcher for career platforms, focused on generating accurate and professional job role information. Your task is to create a comprehensive JSON object for a specific job role ${role}, following this exact structure:
@@ -664,12 +715,36 @@ const saveToDreamCollections = async (
           throw new Error("Invalid skill group structure");
         }
 
+        const skillName =
+          skillGroup.skill || skillGroup.skillName || "Unknown Skill";
+
+        const transformedTopics = Array.isArray(skillGroup.topics)
+          ? skillGroup.topics.map((topic) => {
+              const topicName = topic?.topicName || "Untitled Topic";
+              const topicDescription =
+                topic?.description ||
+                `Core concept in ${skillName} for ${dreamRole}`;
+
+              return {
+                topicName: topicName,
+                description: topicDescription,
+                referenceLink: normalizeReferenceLink(
+                  topic?.referenceLink,
+                  dreamRole,
+                  skillName,
+                  topicName
+                ),
+                completed: false,
+                score: null,
+              };
+            })
+          : [];
+
         return {
-          skillName:
-            skillGroup.skill || skillGroup.skillName || "Unknown Skill",
+          skillName: skillName,
           description:
             skillGroup.description || `Essential skill for ${dreamRole}`,
-          topics: skillGroup.topics || [],
+          topics: transformedTopics,
         };
       });
 
