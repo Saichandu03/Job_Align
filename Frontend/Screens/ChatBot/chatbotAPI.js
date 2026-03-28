@@ -19,7 +19,7 @@
 // Call backend chatbot API
 export const getBotResponse = async (userMessage) => {
   try {
-    const response = await fetch("http://localhost:5000/api/chatbot", {
+    const response = await fetch("https://jobalign-backend.onrender.com/api/chatbot", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -32,6 +32,7 @@ export const getBotResponse = async (userMessage) => {
     const data = await response.json();
     return { bot: data.text };
   } catch (error) {
+    console.log("Error fetching chatbot response:", error);
     return { bot: "Sorry, something went wrong." };
   }
 };

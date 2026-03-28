@@ -1,23 +1,27 @@
-import React from 'react';
-import { SafeAreaView, ActivityIndicator, View } from 'react-native';
-import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { AuthProvider, useAuth } from './utils/AuthContext';
+import React from "react";
+import { SafeAreaView, ActivityIndicator, View } from "react-native";
+import {
+  useFonts,
+  Poppins_400Regular,
+  Poppins_700Bold,
+} from "@expo-google-fonts/poppins";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { AuthProvider, useAuth } from "./utils/AuthContext";
 
 // Screens
-import BottomTabs from './Navigation/BottomTab';
-import JobDetailsScreen from './Screens/Jobs/JobListingInfoPage';
-import TrendingJobsDetails from './Screens/PopularJobs/TrendingJobsDetails';
-import FilterScreen from './Screens/Jobs/FilterScreen';
-import Roadmap from './Screens/DreamJob/Roadmap';
-import WelcomeScreen from './Screens/Login/WelcomeScreen';
-import LoginScreen from './Screens/Login/LoginScreen';
-import RegisterScreen from './Screens/Login/RegisterScreen';
-import OTPVerificationScreen from './Screens/Login/OTPVerificationScreen';
-import ForgotPasswordScreen from './Screens/Login/ForgotPasswordScreen';
-import AtsScore from './Screens/ATSScore/AtsScore';
-import ChatScreen from './Screens/ChatBot/chatscreen';
+import BottomTabs from "./Navigation/BottomTab";
+import JobDetailsScreen from "./Screens/Jobs/JobListingInfoPage";
+import TrendingJobsDetails from "./Screens/PopularJobs/TrendingJobsDetails";
+import FilterScreen from "./Screens/Jobs/FilterScreen";
+import Roadmap from "./Screens/DreamJob/Roadmap";
+import WelcomeScreen from "./Screens/Login/WelcomeScreen";
+import LoginScreen from "./Screens/Login/LoginScreen";
+import RegisterScreen from "./Screens/Login/RegisterScreen";
+import OTPVerificationScreen from "./Screens/Login/OTPVerificationScreen";
+import ForgotPasswordScreen from "./Screens/Login/ForgotPasswordScreen";
+import AtsScore from "./Screens/ATSScore/AtsScore";
+import ChatScreen from "./Screens/ChatBot/chatscreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,7 +30,7 @@ const AppContent = () => {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#0096C7" />
       </View>
     );
@@ -68,17 +72,14 @@ const MainAppStack = () => (
       name="JobDetail"
       component={JobDetailsScreen}
       options={{
-        title: 'Job Details',
+        title: "Job Details",
         headerStyle: {
-          backgroundColor: '#0096C7',
+          backgroundColor: "#0096C7",
         },
-        headerTintColor: '#fff',
+        headerTintColor: "#fff",
       }}
     />
-    <Stack.Screen
-      name="TrendingJobsDetails"
-      component={TrendingJobsDetails}
-    />
+    <Stack.Screen name="TrendingJobsDetails" component={TrendingJobsDetails} />
     <Stack.Screen
       name="FilterScreen"
       component={FilterScreen}
@@ -89,15 +90,12 @@ const MainAppStack = () => (
       component={Roadmap}
       options={{ headerShown: false }}
     />
-     <Stack.Screen
-      name="ATS"
-      component={AtsScore}
-    />
-     <Stack.Screen
-      name="ChatBot"
+    <Stack.Screen name="ATS" component={AtsScore} />
+    <Stack.Screen
+      name="Chatbot"
       component={ChatScreen}
+      options={{ headerShown: false }}
     />
-
   </Stack.Navigator>
 );
 
@@ -139,7 +137,9 @@ export default function App() {
 
   if (!fontsLoaded) {
     return (
-      <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <SafeAreaView
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
         <ActivityIndicator size="large" color="#0096C7" />
       </SafeAreaView>
     );

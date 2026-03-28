@@ -10,7 +10,7 @@ const userSchema = require("../models/userSchema");
 const atsSchema = require("../models/ATSSchema");
 const analyticResultsSchema = require('../models/analyticsResultsSchema')
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY_2);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 // Cloudinary Config
