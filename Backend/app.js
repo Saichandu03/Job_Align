@@ -12,6 +12,12 @@ dotenv.config();
 
 const app = express();
 
+// dns fix for MongoDB connection issues in some environments
+const dns = require('node:dns');
+const dnsPromises = require('node:dns/promises');
+require('dotenv/config');
+ 
+
 // Middleware
 app.use(cors());  
 app.use(bodyParser.json());

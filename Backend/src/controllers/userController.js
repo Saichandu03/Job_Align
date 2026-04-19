@@ -75,9 +75,14 @@ const userLogin = async (req, res) => {
 
     const existingUser = await user.findOne(query);
 
+    // console.log(existingUser);
+
+
     if (!existingUser) {
       return res.status(404).json("User Not Found");
     }
+
+    console.log(existingUser.password, password);
 
     if (existingUser.password !== password) {
       return res.status(401).json("Invalid Password");

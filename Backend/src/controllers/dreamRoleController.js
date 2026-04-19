@@ -16,7 +16,7 @@ const genAI3 = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_KEY_3);
 
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 const model2 = genAI2.getGenerativeModel({ model: "gemini-2.5-flash" });
-const model3 = genAI3.getGenerativeModel({ model: "gemini-2.5-flash" });
+const model3 = genAI2.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 const together = new Together({
   apiKey: process.env.TOGETHER_API_KEY,
@@ -938,6 +938,9 @@ const purify = (analysis) => {
 const getTopicQuestions = async (req, res) => {
   const { topic, description } = req.body;
 
+  console.log("Received topic:", topic);
+  console.log("Received description:", description);  
+
   if (!topic) {
     return res.status(400).json("Missing required field Topic");
   }
@@ -974,6 +977,8 @@ Return ONLY valid JSON in this exact format:
         .send("Internal Server Error! Please contact support.");
     }
 
+    console.log("Parsed questions:", parsedAnalysis);
+
     res.status(200).json(parsedAnalysis);
   } catch (error) {
     console.error("Error:", error);
@@ -983,6 +988,12 @@ Return ONLY valid JSON in this exact format:
 
 const checkTestAnswers = async (req, res) => {
   const { roadMapId, userId, skillId, topicId, answersObject } = req.body;
+
+  console.log("Received userId:", userId);
+  console.log("Received roadMapId:", roadMapId);
+  console.log("Received skillId:", skillId);
+  console.log("Received topicId:", topicId);
+  console.log("Received answersObject:", answersObject);
 
   if (!userId) {
     return res.status(400).json("Missing required field User ID");
@@ -1000,59 +1011,88 @@ const checkTestAnswers = async (req, res) => {
     res.status(400).send("Missing required fields Road Map ID");
   }
 
-    const prompt = `You are an expert AI evaluator specialized in assessing the quality of technical explanations.
+    const prompt = `## EXPERT TECHNICAL ANSWER EVALUATION SYSTEM
 
-Given the following JSON array, which contains beginner-level technical questions and their corresponding human-provided answers for specific technical concepts:
+You are a professional technical evaluator specializing in assessing beginner-friendly technical explanations for mobile-centric concepts.
+
+### INPUT DATA:
 ${JSON.stringify(answersObject)}
 
-**Your Core Task:**
-Evaluate each 'answer' based on how accurately and clearly it describes a **solution** to its 'question'. The explanation must be suitable for a **complete beginner with no prior coding experience**, specifically focusing on **real-world, mobile-centric scenarios**.
+---
+
+## PRIMARY EVALUATION TASK:
+
+For each question-answer pair, evaluate the user's answer against the criteria below and identify the correct/expected answer based on the question context.
 
 ---
 
-**Detailed Evaluation Criteria & Scoring Logic for each 'match_score':**
+## WEIGHTED SCORING CRITERIA (0-100%):
 
-For each answer, assign a percentage score (0-100%) based on the following weighted criteria:
+### 1. Conceptual Accuracy & Correctness (45% weight) - CRITICAL
+- Does the answer describe a technically correct solution to the question?
+- Is the core concept fundamentally sound and factually accurate?
+- Does it align with mobile development best practices?
+- **FAIL CONDITION:** Factually incorrect, misleading, or irrelevant answers = 0%
 
-1.  **Conceptual Accuracy & Technical Relevance (50% of score):**
-    * Does the answer correctly describe a **relevant technical solution or concept** in the context of the question?
-    * Is the core idea fundamentally sound, factual, and directly applicable to practical mobile use cases?
-    * **Strict Penalty:** If the answer is factually incorrect, misleading, irrelevant to the *technical* question's intent, or completely fails to describe *any* solution, this criterion scores 0%.
+### 2. Beginner-Friendly Clarity (35% weight)
+- Is the explanation easy for a non-coder to understand?
+- Uses minimal jargon; explains necessary terminology clearly?
+- Includes relatable real-world or mobile app examples?
+- Logically structured and easy to follow?
 
-2.  **Clarity & Simplicity for Beginners (30% of score):**
-    * Is the explanation exceptionally easy to understand for a complete non-coder?
-    * Is it free of technical jargon, or is any essential jargon clearly and simply explained within the answer itself?
-    * Does it effectively use analogies or real-world examples (where appropriate) to simplify complex ideas?
-    * Does it clearly explain *how a mobile user* would encounter or practically interact with this concept/solution?
-
-3.  **"Solutions, Not Code" Adherence & Focus (20% of score):**
-    * Does the answer focus *exclusively* on describing a conceptual solution or a technical concept in simple terms?
-    * Does it strictly avoid providing actual code snippets, pseudocode, or excessive technical implementation details that are beyond a beginner's conceptual understanding?
-
----
-
-**Strict Handling for Minimal or Non-Descriptive Answers:**
-
-* If an 'answer' is a single letter (e.g., "A", "B"), a very short phrase without explanation (e.g., "Yes", "No", "It works", "Refer to documentation", "Just do X"), or entirely lacks sufficient descriptive content to meaningfully address the question and meet the above criteria, its **match_score MUST be 0-5%**. These answers inherently fail to provide any meaningful description of a solution or concept for a beginner. The corresponding comment should explicitly state this deficiency.
+### 3. Solution-Focused Delivery (20% weight)
+- Focuses on conceptual solutions, NOT code implementation?
+- Avoids code snippets, pseudocode, and technical minutiae?
+- Directly addresses what the user would do/understand?
+- Practical and actionable for mobile users?
 
 ---
 
-**Output Requirements:**
+## SPECIAL HANDLING RULES:
 
-For each question-answer pair in the input answersObject array, you MUST generate and include two new keys within the response array:
--   "match_score": A percentage (0-100%) calculated as described above.
--   "comment": A concise, professional comment (1-3 sentences, maximum 40 words) explaining the reasoning for the score. The comment should highlight strengths, conceptual gaps, or areas for clarity improvement for a beginner.
+**Insufficient Answers (Automatic 0-10%):**
+- Single letters or numbers with no explanation (e.g., "A", "5", "Yes")
+- Vague phrases without detail (e.g., "It works", "Use documentation")
+- Entirely off-topic or blank responses
+- Less than 15 words of substantive content
 
-Finally, calculate the "overall_score" for all questions combined by **strictly averaging** all individual "match_score" percentages from the response array. This "overall_score" MUST be the precise mathematical average of those scores.
+**Strong Answers (80-100%):**
+- Technically accurate with clear logic
+- Explains the "why" and "how" for beginners
+- Includes a practical mobile/app example
+- No code; purely conceptual explanation
 
-Return ONLY a valid JSON object in this exact format, with no additional text or formatting outside the JSON block:
+---
+
+## OUTPUT REQUIREMENTS:
+
+For EACH question-answer pair, you MUST include these fields:
+- **"question"**: Original question from input
+- **"user_answer"**: The user's provided answer
+- **"correct_answer"**: The ideal/expected answer (your expert determination)
+- **"match_score"**: Percentage (0-100) based on criteria above
+- **"comment"**: Concise professional feedback (max 40 words) - highlight strengths and improvement areas
+
+**OVERALL CALCULATION:**
+Calculate "overall_score" as the precise mathematical average of all individual match_scores.
+
+---
+
+## RESPONSE FORMAT:
+
+Return ONLY valid JSON with NO additional text, markdown, comments, or explanations outside the JSON:
 
 \`\`\`json
 {
-  "overall_score": 1-100,
+  "overall_score": <average of all match_scores>,
   "response": [
-    {"question": "...", "answer": "...", "match_score": "...", "comment": "..."},
-    // ... more question-answer pairs (ensure "question" and "answer" keys match your input, e.g., "question-1", "answer-1" if present)
+    {
+      "question": "...",
+      "user_answer": "...",
+      "correct_answer": "<your expert determination of the ideal answer>",
+      "match_score": <0-100>,
+      "comment": "<strength/gap analysis, max 40 words>"
+    }
   ]
 }
 \`\`\`
@@ -1105,6 +1145,9 @@ Return ONLY a valid JSON object in this exact format, with no additional text or
         ),
       ]);
     }
+
+    console.log("Parsed analysis:", parsedAnalysis);
+
     res.status(200).json(parsedAnalysis);
   } catch (err) {
     console.error(err);

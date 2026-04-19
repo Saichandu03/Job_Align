@@ -22,6 +22,45 @@ const together = new Together({
   apiKey: process.env.TOGETHER_API_KEY,
 });
 
+const buildDefaultMatchResult = (message) => ({
+  matchPercentage: 0,
+  matchedSkills: [],
+  unmatchedSkills: [],
+  improvementSuggestions: [message],
+});
+
+const extractJsonFromText = (text = "") => {
+  const trimmedText = String(text).trim();
+  const codeBlockMatch = trimmedText.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+
+  if (codeBlockMatch?.[1]) {
+    return codeBlockMatch[1].trim();
+  }
+
+  const jsonObjectMatch = trimmedText.match(/\{[\s\S]*\}/);
+  if (jsonObjectMatch) {
+    return jsonObjectMatch[0].trim();
+  }
+
+  return trimmedText;
+};
+
+const normalizeMatchResult = (parsedResult) => ({
+  matchPercentage: Math.max(
+    0,
+    Math.min(100, Number(parsedResult.matchPercentage) || 0)
+  ),
+  matchedSkills: Array.isArray(parsedResult.matchedSkills)
+    ? parsedResult.matchedSkills.slice(0, 10)
+    : [],
+  unmatchedSkills: Array.isArray(parsedResult.unmatchedSkills)
+    ? parsedResult.unmatchedSkills.slice(0, 10)
+    : [],
+  improvementSuggestions: Array.isArray(parsedResult.improvementSuggestions)
+    ? parsedResult.improvementSuggestions.slice(0, 6)
+    : [],
+});
+
 const APP_ID = process.env.ADZUNA_APP_ID;
 const APP_KEY = process.env.ADZUNA_APP_KEY;
 const BASE_URL = process.env.ADZUNA_BASE_URL;
@@ -1249,17 +1288,9 @@ const matchResume = async (jobObject, resumeContent) => {
     // const response = await result.response;
     // const analysis = response.text();
 
-    const response = await together.chat.completions.create({
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
-    });
-
-    const analysis = response.choices[0].message.content;
+    const result = await model1.generateContent(prompt);
+    const response = await result.response;
+    const analysis = response.text();
     // console.log("This is Result : ", analysis);
     // console.log(prompt);
 
@@ -1330,29 +1361,22 @@ const matchResume = async (jobObject, resumeContent) => {
     // );
 
     try {
-      const rr = JSON.parse(analysis.trim());
-      console.log(rr);
-      return rr;
+      const jsonText = extractJsonFromText(analysis);
+      const parsedAnalysis = JSON.parse(jsonText);
+      const normalizedResult = normalizeMatchResult(parsedAnalysis);
+      console.log(normalizedResult);
+      return normalizedResult;
     } catch (error) {
       console.error("JSON parsing error:", error);
-      console.error("Raw analysis:", jsonStr);
-      return {
-        matchPercentage: 0,
-        matchedSkills: [],
-        unmatchedSkills: [],
-        improvementSuggestions: ["JSON parsing failed. Please try again."],
-        error: "JSON parsing failed",
-      };
+      console.error("Raw analysis:", analysis);
+      return buildDefaultMatchResult("JSON parsing failed. Please try again.");
     }
   } catch (error) {
     console.error("Error in matchResume function:", error);
     return {
-      matchPercentage: 0,
-      matchedSkills: [],
-      unmatchedSkills: [],
-      improvementSuggestions: [
-        "Technical error occurred during analysis. Please try again.",
-      ],
+      ...buildDefaultMatchResult(
+        "Technical error occurred during analysis. Please try again."
+      ),
       error: error.message,
     };
   }
